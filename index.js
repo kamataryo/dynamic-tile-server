@@ -43,7 +43,8 @@ express()
       bottom: tile2lat(y + 1, z),
       left: tile2lon(x, z)
     }
-
+    const self_x = x
+    const self_y = y
     res.set('Content-Type', 'image/png')
 
     createReadableTileImageStream({
@@ -51,15 +52,47 @@ express()
       height: 256,
       filterType: 4
     }, (x, y) => {
-      const r = Math.random() * 255
-      const g = Math.random() * 255
-      const b = Math.random() * 255
-      const a = Math.random() * 255
-      return {
-        Red:   r,
-        Green: g,
-        Blue: b,
-        Alpha: a
+      if (x === 0 || y === 0 || x === 255 || y === 255) {
+        return {
+          Red: 200,
+          Green: 200,
+          Blue: 200,
+          Alpha: 255
+        }
+      } else {
+        if (self_y % 2 === 0) {
+          if (self_x % 2 === 0) {
+            return {
+              Red:   x,
+              Green: x,
+              Blue: y,
+              Alpha: 200
+            }
+
+          } else {
+            return {
+              Red:   x,
+              Green: 255 - y,
+              Blue: y,
+              Alpha: 200
+            }
+          }
+        } else {
+          if (self_x % 2 === 2) {
+            return {
+              Red:   y,
+              Green: x,
+              Blue: y,
+              Alpha: 200
+            }
+          }
+          return {
+            Red:   y,
+            Green: 255 - x,
+            Blue: x,
+            Alpha: 200
+          }
+        }
       }
     })
       .on('data', (chunk) => {
