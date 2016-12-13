@@ -2,8 +2,10 @@ import express from 'express'
 import { PNG } from 'pngjs'
 import { tile2lat, tile2lon } from './tileConvert'
 
+/**
+ * wrapper of PNGjs library
+ */
 const createReadableTileImageStream = (opt, getRGBA) => {
-
   const png = new PNG(opt)
 
   for (var y = 0; y < png.height; y++) {
@@ -19,6 +21,56 @@ const createReadableTileImageStream = (opt, getRGBA) => {
   return png.pack()
 }
 
+const getDrawTileFunc = (tileX, tileY) => {
+  return (x, y) => {
+    if (x === 0 || y === 0 || x === 255 || y === 255) {
+      return {
+        Red: 200,
+        Green: 200,
+        Blue: 200,
+        Alpha: 255
+      }
+    } else {
+      if (tileY % 2 === 0) {
+        if (tileX % 2 === 0) {
+          return {
+            Red:   x,
+            Green: x,
+            Blue: y,
+            Alpha: 200
+          }
+
+        } else {
+          return {
+            Red:   x,
+            Green: 255 - y,
+            Blue: y,
+            Alpha: 200
+          }
+        }
+      } else {
+        if (tileX % 2 === 2) {
+          return {
+            Red:   y,
+            Green: x,
+            Blue: y,
+            Alpha: 200
+          }
+        }
+        return {
+          Red:   y,
+          Green: 255 - x,
+          Blue: x,
+          Alpha: 200
+        }
+      }
+    }
+  }  
+}
+
+/**
+ * start server
+ */
 express()
   .get('/:z/:x/:y', (req, res) => {
 
@@ -51,50 +103,7 @@ express()
       width: 256,
       height: 256,
       filterType: 4
-    }, (x, y) => {
-      if (x === 0 || y === 0 || x === 255 || y === 255) {
-        return {
-          Red: 200,
-          Green: 200,
-          Blue: 200,
-          Alpha: 255
-        }
-      } else {
-        if (self_y % 2 === 0) {
-          if (self_x % 2 === 0) {
-            return {
-              Red:   x,
-              Green: x,
-              Blue: y,
-              Alpha: 200
-            }
-
-          } else {
-            return {
-              Red:   x,
-              Green: 255 - y,
-              Blue: y,
-              Alpha: 200
-            }
-          }
-        } else {
-          if (self_x % 2 === 2) {
-            return {
-              Red:   y,
-              Green: x,
-              Blue: y,
-              Alpha: 200
-            }
-          }
-          return {
-            Red:   y,
-            Green: 255 - x,
-            Blue: x,
-            Alpha: 200
-          }
-        }
-      }
-    })
+    }, getDrawTileFunc(self_x, self_y))
       .on('data', (chunk) => {
         res.write(chunk)
       })
