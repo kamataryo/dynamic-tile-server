@@ -10,9 +10,7 @@
   "author": "kamataryo",
   "license": "ISC",
   "dependencies": {
-    "d3": "^4.4.0",
     "express": "^4.14.0",
-    "jsdom": "^9.8.3",
     "pngjs": "^3.0.0"
   },
   "devDependencies": {
