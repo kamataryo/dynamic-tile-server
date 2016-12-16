@@ -7,6 +7,6 @@ import { route as pngRoute } from './tile/png'
  */
 // TODO: How to use regex for express route?
 express()
-  .get('/:z/:x/:y.svg', svgRoute)
-  .get('/:z/:x/:y.png', pngRoute)
+  .get('/:z/:x/:y', svgRoute)
+  // .get('/:z/:x/:y.png', pngRoute)
   .listen(3000)
