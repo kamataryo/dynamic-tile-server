@@ -1,6 +1,6 @@
 import express from 'express'
-import { route as svgRoute } from './tile/svg'
-import { route as pngRoute } from './tile/png'
+import { route as svgRoute } from './tiles/svg'
+import { route as pngRoute } from './tiles/png'
 
 /**
  * start server
